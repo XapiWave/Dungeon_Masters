@@ -6,27 +6,31 @@ char map[5][5];
 
 int PX=3;		//	Player Vertical
 int PY=3;		//	Player Horizontal
+int PI;			//	Player Input
 //		Top left = [1] [1]		 Bottom right =  [5] [5]		Middle = [3] [3]
 
 void reset();
 void display();
 void player_input();
 
-WINDOW *win(void);
-int keypad(WINDOW *win, bool);
-int noecho();
-//int nodelay(WINDOW *win, bool)
-
 int main(void)
 {
-	reset();
-	while (true)
+initscr();		//	Initializes the screen (aka the ncurses library)
+raw();			//	Disables line buffering, sends all key inputs to the programm using ncurses
+keypad(stdscr, TRUE);	//	Enable special keys to be captured
+noecho();		//	Makes it so the pressed keys are not displayed in the terminal
+	
+	
+	
+	for(int i=0;i<10;i++)
 	{
 	display();
 	player_input();
-	system("clear");
+	
 	}
 	
+	
+endwin();		//closes the window (aka the ncurses library)
 	return 0;
 }
 
@@ -41,33 +45,59 @@ void reset(){
 
 
 void display() {
+	//system("clear");
+	reset();
 	map[PX][PY] = '*';
-	printf("\n\n\n");
+	
 	for (int h=1;h<=5;h++)
 	{
-		printf("\t\t");
+		printw("\t\t");
 		for(int v=1;v<=5;v++)
 		{
 			if (map[h][v] != map[PX][PY])
-			printf("[%c]  ", map[h][v]);
+			printw("[%c]  ", map[h][v]);
 			
 			if (map[h][v] == map[PX][PY])
-			printf("[*]  ");
+			printw("[*]  ");
 		}
-		printf("\n\n");
+		printw("\n\n");
 	}
+refresh();
 }
 
 void player_input(){
-	int wgetch(WINDOW *win);
+switch(PI = getch())
+	{
+	case KEY_UP:
+	    PX--;
+	    break;
 	
+	case KEY_DOWN:
+	    PX++;
+	    break;
 	
-
-
+	case KEY_LEFT:
+	    PY--;
+	    break;
+	
+	case KEY_RIGHT:
+	    PY++;
+	    break;
+	}
 }
 
 
+
+
+
+
+
+
+
+
+
 /*
+
 int main() {
     int ch;
 
@@ -83,19 +113,19 @@ int main() {
     while ((ch = getch()) != 'q') {
         switch (ch) {
             case KEY_UP:
-                printw("Up arrow key pressed\n");
+                printf("Up arrow key pressed\n");
                 break;
             case KEY_DOWN:
-                printw("Down arrow key pressed\n");
+                printf("Down arrow key pressed\n");
                 break;
             case KEY_LEFT:
-                printw("Left arrow key pressed\n");
+                printf("Left arrow key pressed\n");
                 break;
             case KEY_RIGHT:
-                printw("Right arrow key pressed\n");
+                printf("Right arrow key pressed\n");
                 break;
             default:
-                printw("Pressed key is: %c\n", ch);
+                printf("Pressed key is: %c\n", ch);
                 break;
         }
         refresh(); // Refresh the screen to show the printed text
@@ -105,5 +135,5 @@ int main() {
     endwin();
     return 0;
 }
-* 
-*/ // Chat-GPT example, - try to understand
+*/
+// Chat-GPT example, - try to understand
