@@ -13,11 +13,11 @@ A tabletop-like game in C made by 2 idiots that share the same brain cell
 
 ### Compile the C program with GCC Compiler
 
-``$ gcc TicTacToe_Linux.c -o TicTacToe``
+``$ gcc GameName.c -o GameName``
 
 
 ### Run the game
 
-``./TicTacToe``
+``./GameName``
 
 ===========================================================================
