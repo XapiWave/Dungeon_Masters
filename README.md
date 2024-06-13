@@ -16,7 +16,7 @@ A tabletop-like game in C made by 2 idiots that share the same brain cell
 
 ### Compile the C program with GCC Compiler
 
-``$ gcc GameName.c -o GameName``
+``$ gcc GameName.c -o GameName -lncurses``
 
 
 ### Run the game
