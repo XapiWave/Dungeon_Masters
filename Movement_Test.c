@@ -22,10 +22,12 @@ noecho();		//	Makes it so the pressed keys are not displayed in the terminal
 	
 	
 	
-	for(int i=0;i<100;i++)
+	while(1)
 	{
 	display();
 	player_input();
+	
+	if(PI == 'q') break;
 	
 	}
 	
@@ -82,6 +84,9 @@ switch(PI = getch())
 	
 	case KEY_RIGHT:
 	    PY++;
+	    break;
+	
+	default:
 	    break;
 	}
 }
