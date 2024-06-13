@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // VARIAVEIS //
 char nome_char[12];
 int classe_char;
 int nivel_char;
+char classe_char_val[20];
 
 struct stats {
 	int forca, agi, intel, resist;
@@ -54,16 +56,19 @@ int main(void)
 			{
 				case 1:
 					printf("Vamos, levante-se Cavaleiro %s!\n\n", nome_char);
+					strcpy(classe_char_val, "Cavaleiro");
 				break;
 				
 				
 				case 2:
-					printf("Vamos, levante-se Mago %s!\n\n", nome_char);	
+					printf("Vamos, levante-se Mago %s!\n\n", nome_char);
+					strcpy(classe_char_val, "Mago");
 				break;
 				
 				
 				case 3:
-					printf("Vamos, levante-se Ninja %s!\n\n", nome_char);	
+					printf("Vamos, levante-se Ninja %s!\n\n", nome_char);
+					strcpy(classe_char_val, "Ninja");
 				break;
 				
 				default:
@@ -74,6 +79,8 @@ int main(void)
 	UI();
 	
 	// Atributos //
+	nivel_char = 1;
+	
 	char1.forca  = 0;
 	char1.agi 	 = 0;
 	char1.intel  = 0;
@@ -100,9 +107,11 @@ int main(void)
 		char1.dodge = char1.agi + 2;
 	// Atributos Rigidos //
 	
+	printf("Informacoes do Personagem: \n\n\t%s, %s Nivel %d\n", nome_char, classe_char_val, nivel_char);
 	printf("\n\nSeus atributos sao: \n\tFOR %d\n\tAGI %d\n\tINT %d\n\tRES %d\n\n", char1.forca, char1.agi, char1.intel, char1.resist);
 	printf("\tPontos de Vida: %d\n\tPontos de Magia: %d\n\tChance de Esquiva: %d\n\n", char1.hp, char1.mana, char1.dodge);
 	
+	UI();
 	
 	return 0;
 }
