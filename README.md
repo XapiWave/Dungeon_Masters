@@ -6,7 +6,7 @@ A tabletop-like game in C made by 2 idiots that share the same brain cell
 
 ## To run on linux please use :
 
-## Install the 'curses' library
+### Install the 'curses' library
 ``$ sudo apt-get install libncurses5-dev libncursesw5-dev``
 
 ### Install the build-essential packages
