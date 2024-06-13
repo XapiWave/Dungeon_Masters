@@ -22,7 +22,7 @@ noecho();		//	Makes it so the pressed keys are not displayed in the terminal
 	
 	
 	
-	for(int i=0;i<10;i++)
+	for(int i=0;i<100;i++)
 	{
 	display();
 	player_input();
@@ -45,10 +45,10 @@ void reset(){
 
 
 void display() {
-	//system("clear");
+	clear();
 	reset();
 	map[PX][PY] = '*';
-	
+	printw("\n\n\n");
 	for (int h=1;h<=5;h++)
 	{
 		printw("\t\t");
