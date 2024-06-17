@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <curses.h>
 
-char map[5][5];
+char map[7][7];
 
-int PX=3;		//	Player Vertical
-int PY=3;		//	Player Horizontal
+int Pv=3;		//	Player Vertical
+int Ph=3;		//	Player Horizontal
 int PI;			//	Player Input
 //		Top left = [1] [1]		 Bottom right =  [5] [5]		Middle = [3] [3]
 
@@ -38,8 +38,13 @@ endwin();		//closes the window (aka the ncurses library)
 
 
 void reset(){
-	for (int h=1;h<=5;h++){
-		for (int v=1;v<=5;v++){
+	for (int v=0;v<=6;v++){
+		for (int h=0;h<=6;h++){
+			if (h==0 || h==6)
+			map[h][v] = '!';
+			if (v==0 || v==6)
+			map[h][v] = '!';
+			if (h!=0 && h!=6 && v!=0 && v!=6)
 			map[h][v] = ' ';
 		}
 	}
@@ -49,17 +54,17 @@ void reset(){
 void display() {
 	clear();
 	reset();
-	map[PX][PY] = '*';
+	map[Ph][Pv] = '*';
 	printw("\n\n\n");
-	for (int h=1;h<=5;h++)
+	for (int v=1;v<=5;v++)
 	{
 		printw("\t\t");
-		for(int v=1;v<=5;v++)
+		for(int h=1;h<=5;h++)
 		{
-			if (map[h][v] != map[PX][PY])
+			if (map[h][v] != map[Ph][Pv])
 			printw("[%c]  ", map[h][v]);
 			
-			if (map[h][v] == map[PX][PY])
+			if (map[h][v] == map[Ph][Pv])
 			printw("[*]  ");
 		}
 		printw("\n\n");
@@ -71,19 +76,27 @@ void player_input(){
 switch(PI = getch())
 	{
 	case KEY_UP:
-	    PX--;
+	    Pv--;
+	    if(map[Ph][Pv] == '!')
+	    Pv++;
 	    break;
 	
 	case KEY_DOWN:
-	    PX++;
+	    Pv++;
+	    if(map[Ph][Pv] == '!')
+	    Pv--;
 	    break;
 	
 	case KEY_LEFT:
-	    PY--;
+	    Ph--;
+	    if(map[Ph][Pv] == '!')
+	    Ph++;
 	    break;
 	
 	case KEY_RIGHT:
-	    PY++;
+	    Ph++;
+	    if(map[Ph][Pv] == '!')
+	    Ph--;
 	    break;
 	
 	default:
@@ -92,53 +105,3 @@ switch(PI = getch())
 }
 
 
-
-
-
-
-
-
-
-
-
-/*
-
-int main() {
-    int ch;
-
-    // Initialize the curses mode
-    initscr();
-    raw();              // Line buffering disabled, Pass all keystrokes to the program
-    keypad(stdscr, TRUE); // Enable special keys to be captured
-    noecho();           // Don't echo keystrokes to the screen
-
-    printw("Press arrow keys to move the cursor. Press 'q' to exit.\n");
-    refresh();
-
-    while ((ch = getch()) != 'q') {
-        switch (ch) {
-            case KEY_UP:
-                printf("Up arrow key pressed\n");
-                break;
-            case KEY_DOWN:
-                printf("Down arrow key pressed\n");
-                break;
-            case KEY_LEFT:
-                printf("Left arrow key pressed\n");
-                break;
-            case KEY_RIGHT:
-                printf("Right arrow key pressed\n");
-                break;
-            default:
-                printf("Pressed key is: %c\n", ch);
-                break;
-        }
-        refresh(); // Refresh the screen to show the printed text
-    }
-
-    // End the curses mode
-    endwin();
-    return 0;
-}
-*/
-// Chat-GPT example, - try to understand
