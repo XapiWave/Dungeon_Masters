@@ -73,7 +73,7 @@ int color;
 int placar_option;
 //---------------------------------
 //------------jogo-----------------
-char map[5][5];	//	mapa do jogo
+char map[7][7];	//	mapa do jogo
 int Pv=3;		//	Player Vertical
 int Ph=3;		//	Player Horizontal
 int PI;			//	Player Input
@@ -111,7 +111,7 @@ int main(void)
 			case 1:
 
 /*==========================================================================*
- |									JOGO									|
+ |				    JOGO				    |
  *==========================================================================*/
 
 initscr();		//	Initializes the screen (aka the ncurses library)
@@ -130,7 +130,7 @@ endwin();		//closes the window (aka the ncurses library)
 			break;
 
 /*==========================================================================*
- |								   FIM JOGO									|
+ |				  FIM JOGO				    |
  *==========================================================================*/
 			
 			case 2:
@@ -326,12 +326,15 @@ void UI()
 }
 
 /*==========================================================================*
- |								FUNÇÕES JOGO								|
+ |				FUNÇÕES JOGO				    |
  *==========================================================================*/
 
 void reset(){
-	for (int h=1;h<=5;h++){
-		for (int v=1;v<=5;v++){
+	for (int v=0;v<=6;v++){
+		for (int h=0;h<=6;h++){
+			if (h==0 || h==6 || v==0 || v==6)
+			map[h][v] = '!';
+			if (h!=0 && h!=6 && v!=0 && v!=6)
 			map[h][v] = ' ';
 		}
 	}
@@ -341,18 +344,18 @@ void reset(){
 void display() {
 	clear();
 	reset();
-	map[Pv][Ph] = '!';
+	map[Ph][Pv] = '*';
 	printw("\n\n\n");
-	for (int h=1;h<=5;h++)
+	for (int v=1;v<=5;v++)
 	{
 		printw("\t\t");
-		for(int v=1;v<=5;v++)
+		for(int h=1;h<=5;h++)
 		{
-			if (map[h][v] != map[Pv][Ph])
+			if (map[h][v] != map[Ph][Pv])
 			printw("[%c]  ", map[h][v]);
 			
-			if (map[h][v] == map[Pv][Ph])
-			printw("[%c]  ", aparencia);
+			if (map[h][v] == map[Ph][Pv])
+			printw("[*]  ");
 		}
 		printw("\n\n");
 	}
@@ -364,22 +367,29 @@ switch(PI = getch())
 	{
 	case KEY_UP:
 	    Pv--;
+	    if(map[Ph][Pv] == '!')
+	    Pv++;
 	    break;
 	
 	case KEY_DOWN:
 	    Pv++;
+	    if(map[Ph][Pv] == '!')
+	    Pv--;
 	    break;
 	
 	case KEY_LEFT:
 	    Ph--;
+	    if(map[Ph][Pv] == '!')
+	    Ph++;
 	    break;
 	
 	case KEY_RIGHT:
 	    Ph++;
+	    if(map[Ph][Pv] == '!')
+	    Ph--;
 	    break;
 	
 	default:
 	    break;
 	}
 }
-
