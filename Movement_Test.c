@@ -12,7 +12,7 @@ int PI;			//	Player Input
 
 void reset();
 void display();
-void player_inputM();	//	Player input for movement
+int player_inputM();	//	Player input for movement
 //-------------------------movement--------------------------------------------
 
 //---------------------enemy-encounter--------------------------------------------
@@ -51,8 +51,9 @@ srand(time(NULL));
 	while(1)
 	{
 	display();
-	player_inputM();
+	int moved = player_inputM();
 
+    if (moved){
 	Ev = rand()%10+1;
 	
 	if (Ev <= basic.Ec)
@@ -66,6 +67,7 @@ srand(time(NULL));
 		victories++;
 		moves = 0;
 		reset_Enmy();	}
+	    }
 	if(PI == 'q') break;
 	
 	}
@@ -108,40 +110,51 @@ void display(){
 	}
 printw("\t\t\t\t\t\t\tEnemys defeated -> %d\n\n", victories);
 printw("\t\t\t\t\t\t\tPlayer hp -> %d\n", Php);
-printw("\t\t\t\t\t\t\tPlayer dmg -> %d\n\n", Pdmg);
+printw("\t\t\t\t\t\t\tPlayer dmg -> %d\n\n\n", Pdmg);
+printw("\t\t\t\t\t\t\tMovement -> Arrow Keys\n\n");
 refresh();
 }
 
-void player_inputM(){
+int player_inputM(){
+int moved = 0;
 switch(PI = getch())
 	{
 	case KEY_UP:
 	    Pv--;
 	    if(map[Ph][Pv] == '!')
-	    Pv++;
+		Pv++;
+	    else
+		moved = 1;
 	    break;
 	
 	case KEY_DOWN:
 	    Pv++;
 	    if(map[Ph][Pv] == '!')
-	    Pv--;
+		Pv--;
+	    else
+		moved = 1;
 	    break;
 	
 	case KEY_LEFT:
 	    Ph--;
 	    if(map[Ph][Pv] == '!')
-	    Ph++;
+		Ph++;
+	    else
+		moved = 1;
 	    break;
 	
 	case KEY_RIGHT:
 	    Ph++;
 	    if(map[Ph][Pv] == '!')
-	    Ph--;
+		Ph--;
+	    else
+		moved = 1;
 	    break;
 	
 	default:
 	    break;
 	}
+return moved;
 }
 
 //---------------------enemy-encounter--------------------------------------------
