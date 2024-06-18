@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <curses.h>
 
+//-------------------------movement--------------------------------------------
 char map[7][7];
-
 int Pv=3;		//	Player Vertical
 int Ph=3;		//	Player Horizontal
 int PI;			//	Player Input
@@ -11,7 +12,28 @@ int PI;			//	Player Input
 
 void reset();
 void display();
-void player_input();
+void player_inputM();	//	Player input for movement
+//-------------------------movement--------------------------------------------
+
+//---------------------enemy-encounter--------------------------------------------
+typedef struct	{
+	int hp;
+	int dmg;
+	int Ec;		//	Encounter value (chance)
+}enemy;
+enemy basic;
+
+
+int Ev;			//	Encounter value
+char ActL[3];	// Battle action list
+int Act=1;
+
+void encounter();
+void battle_act();
+void reset_Act();	//reset Act list
+void reset_Enmy();
+//---------------------enemy-encounter--------------------------------------------
+
 
 int main(void)
 {
@@ -19,14 +41,24 @@ initscr();		//	Initializes the screen (aka the ncurses library)
 raw();			//	Disables line buffering, sends all key inputs to the programm using ncurses
 keypad(stdscr, TRUE);	//	Enable special keys to be captured
 noecho();		//	Makes it so the pressed keys are not displayed in the terminal
+srand(time(NULL));
 	
-	
-	
+	reset_Enmy();
 	while(1)
 	{
 	display();
-	player_input();
+	player_inputM();
+
+	Ev = rand()%3+1;
 	
+	if (Ev == basic.Ec)
+	do{
+		encounter ();
+		
+		if(PI == 'q') break;
+	
+	}while(basic.hp >0);
+	reset_Enmy();
 	if(PI == 'q') break;
 	
 	}
@@ -50,8 +82,7 @@ void reset(){
 	}
 }
 
-
-void display() {
+void display(){
 	clear();
 	reset();
 	map[Ph][Pv] = '*';
@@ -72,7 +103,7 @@ void display() {
 refresh();
 }
 
-void player_input(){
+void player_inputM(){
 switch(PI = getch())
 	{
 	case KEY_UP:
@@ -104,4 +135,75 @@ switch(PI = getch())
 	}
 }
 
+//---------------------enemy-encounter--------------------------------------------
+
+void encounter(){
+	clear();
+	reset_Act();
+	ActL[Act] = '*';
+	printw("Battle Window\n\n\t\tEnemy Encountered!\t\t\texit-> q\n\n\tEnemy hp -> %d\n\tEnemy dmg -> %d", basic.hp, basic.dmg);
+	printw("\n\n\n\t\t        ATTACK     BLOCK      SKIP\n\t\t\t");
+	for(int i=1;i<=3;i++)
+	{
+		if (ActL[i] != Act)
+		printw("[%c]        ", ActL[i]);
+		if (ActL[i] == Act)
+		printw("[*]        ");
+	}
+	printw("\n\n");
+	refresh();
+	
+	battle_act();
+}
+
+void battle_act(){
+	int s;	// used in skip witch
+	switch(PI = getch())
+	{
+	case KEY_LEFT:
+	    Act--;
+	    if (Act<1)
+	    Act++;
+	    break;
+	
+	case KEY_RIGHT:
+		Act++;
+		if (Act>3)
+		Act--;
+	    break;
+	
+	case KEY_ENTER:
+		if (Act == 1)
+		printw("\tAttack - succes");
+		if (Act == 2)
+		printw("\tBlock - succes");
+		if (Act == 3)
+		printw("\tSkip - succes");
+		printw("\n\n/>Press any key to continue");
+		refresh();
+		switch(s = getch()){
+			case KEY_UP:
+			break;
+			default:
+			break;				}
+		break;
+	
+	default:
+	    break;
+	}
+	
+	
+	
+}
+
+void reset_Act(){
+	for(int i=1;i<=3;i++)
+		ActL[i] = ' ';
+}
+
+void reset_Enmy(){
+	basic.hp = 5;
+	basic.dmg = 2;
+	basic.Ec = 3;
+}
 
