@@ -91,6 +91,7 @@ void aparencias();
 void mudar_cor();
 void leaderboard();
 void mostrar_leaderboard();
+void clear_screen();
 //---------------------------------
 //------------jogo-----------------
 void reset();
@@ -102,7 +103,7 @@ void player_input();
 
 int main(void)
 {
-	system("clear");
+	clear_screen();
 	do{
 		menu_principal();
 		
@@ -170,7 +171,7 @@ void mostrar_leaderboard()
 		return;
 	}
 	
-	system("clear");
+	clear_screen();
 	
 	printf("\nPlacar:\n");
 	while(fgets(linha, sizeof(linha), f) != NULL ) {
@@ -232,7 +233,7 @@ do{
 			scanf("%d", &color);
 			change_color(color);
 			
-			system("clear");
+			clear_screen();
 			
 			printf("Cor da interface alterada.\n");
 		break;
@@ -248,7 +249,7 @@ do{
 			
 			aparencias();
 
-			system("clear");
+			clear_screen();
 			printf("\n\nNova aparencia: %c\n\n", aparencia);
 			
 			UI();
@@ -256,7 +257,7 @@ do{
 		
 		
 		case 3:
-			system("clear");
+			clear_screen();
 			printf("\n\nVoltando ao menu principal...\n\n");
 		break;	
 		
@@ -323,6 +324,14 @@ void UI()
 			printf("-");
 		}
 	printf("+");
+}
+
+void clear_screen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 }
 
 /*==========================================================================*
