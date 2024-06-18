@@ -29,6 +29,9 @@ int Ev;			//	Encounter value
 char ActL[3];		//	Battle action list
 int Act=1;
 
+int Php = 25;		//	Player hp
+int Pdmg = 3;		//	Player dmg
+
 void encounter();
 void battle_act();
 void reset_Act();	//reset Act list
@@ -50,9 +53,9 @@ srand(time(NULL));
 	display();
 	player_inputM();
 
-	Ev = rand()%3+1;
+	Ev = rand()%10+1;
 	
-	if (Ev == basic.Ec)
+	if (Ev <= basic.Ec)
 	do{
 		if(PI == 'q') break;
 		encounter ();
@@ -104,6 +107,8 @@ void display(){
 		printw("\n\n");
 	}
 printw("\t\t\t\t\t\t\tEnemys defeated -> %d\n\n", victories);
+printw("\t\t\t\t\t\t\tPlayer hp -> %d\n", Php);
+printw("\t\t\t\t\t\t\tPlayer dmg -> %d\n\n", Pdmg);
 refresh();
 }
 
@@ -156,7 +161,9 @@ void encounter(){
 		if (ActL[i] == Act)
 		printw("[*]        ");
 	}
-	printw("\n\t\t\t\t\t\t\t\tmoves-> %d\n", moves);
+	printw("\n\t\t\t\t\t\t\t\tmoves -> %d\n", moves);
+	printw("\n\n\t\t\t\t\t\t\t\thp -> %d", Php);
+	printw("\n\t\t\t\t\t\t\t\tdmg -> %d\n\n", Pdmg);
 	refresh();
 	
 	battle_act();
@@ -180,7 +187,7 @@ void battle_act(){
 	case 10:		// Enter key represented by 10
 		if (Act == 1)	{
 		printw("\tAttack - succes");
-		basic.hp = basic.hp - 2;
+		basic.hp = basic.hp - Pdmg;
 		moves++;	}
 		if (Act == 2)	{
 		printw("\tBlock - succes");
@@ -208,8 +215,8 @@ void reset_Act(){
 }
 
 void reset_Enmy(){
-	basic.hp = 5;
-	basic.dmg = 2;
-	basic.Ec = 3;
+	basic.hp = rand()%3+4;
+	basic.dmg = rand()%3+1;
+	basic.Ec = 5;
 }
 
