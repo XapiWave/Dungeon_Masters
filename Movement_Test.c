@@ -157,7 +157,7 @@ void encounter(){
 }
 
 void battle_act(){
-	int s;	// used in skip witch
+	int s;	// used to "press any key to continue"
 	switch(PI = getch())
 	{
 	case KEY_LEFT:
@@ -181,11 +181,7 @@ void battle_act(){
 		printw("\tSkip - succes");
 		printw("\n\n/>Press any key to continue");
 		refresh();
-		switch(s = getch()){
-			case KEY_UP:
-			break;
-			default:
-			break;				}
+		
 		break;
 	
 	default:
