@@ -355,7 +355,7 @@ void display() {
 			printw("[%c]  ", map[h][v]);
 			
 			if (map[h][v] == map[Ph][Pv])
-			printw("[*]  ");
+			printw("[%c]  ", aparencia);
 		}
 		printw("\n\n");
 	}
