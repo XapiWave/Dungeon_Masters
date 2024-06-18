@@ -23,9 +23,10 @@ typedef struct	{
 }enemy;
 enemy basic;
 
-
+int victories=0;
+int moves=0;
 int Ev;			//	Encounter value
-char ActL[3];	// Battle action list
+char ActL[3];		//	Battle action list
 int Act=1;
 
 void encounter();
@@ -53,16 +54,18 @@ srand(time(NULL));
 	
 	if (Ev == basic.Ec)
 	do{
+		if(PI == 'q') break;
 		encounter ();
-		
 		if(PI == 'q') break;
 	
 	}while(basic.hp >0);
-	reset_Enmy();
+	if(basic.hp<=0)		{
+		victories++;
+		moves = 0;
+		reset_Enmy();	}
 	if(PI == 'q') break;
 	
 	}
-	
 	
 endwin();		//closes the window (aka the ncurses library)
 	return 0;
@@ -100,6 +103,7 @@ void display(){
 		}
 		printw("\n\n");
 	}
+printw("\t\t\t\t\t\t\tEnemys defeated -> %d\n\n", victories);
 refresh();
 }
 
@@ -138,6 +142,8 @@ switch(PI = getch())
 //---------------------enemy-encounter--------------------------------------------
 
 void encounter(){
+	
+	
 	clear();
 	reset_Act();
 	ActL[Act] = '*';
@@ -150,14 +156,13 @@ void encounter(){
 		if (ActL[i] == Act)
 		printw("[*]        ");
 	}
-	printw("\n\n");
+	printw("\n\t\t\t\t\t\t\t\tmoves-> %d\n", moves);
 	refresh();
 	
 	battle_act();
 }
 
 void battle_act(){
-	int s;	// used to "press any key to continue"
 	switch(PI = getch())
 	{
 	case KEY_LEFT:
@@ -172,16 +177,21 @@ void battle_act(){
 		Act--;
 	    break;
 	
-	case KEY_ENTER:
-		if (Act == 1)
+	case 10:		// Enter key represented by 10
+		if (Act == 1)	{
 		printw("\tAttack - succes");
-		if (Act == 2)
+		basic.hp = basic.hp - 2;
+		moves++;	}
+		if (Act == 2)	{
 		printw("\tBlock - succes");
-		if (Act == 3)
+		moves++;	}
+		if (Act == 3)	{
 		printw("\tSkip - succes");
+		moves++;	}
+		
 		printw("\n\n/>Press any key to continue");
 		refresh();
-		
+		getch();	//	awaits user input
 		break;
 	
 	default:
