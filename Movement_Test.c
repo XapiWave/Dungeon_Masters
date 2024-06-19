@@ -20,6 +20,7 @@ typedef struct	{
 	int hp;
 	int dmg;
 	int Ec;		//	Encounter value (chance)
+	int movesT;	//	Move threshold (n of moves for enemy to attack)
 }enemy;
 enemy basic;
 
@@ -174,7 +175,7 @@ void encounter(){
 		if (ActL[i] == Act)
 		printw("[*]        ");
 	}
-	printw("\n\t\t\t\t\t\t\t\tmoves -> %d\n", moves);
+	printw("\n\tEnemy attacks in -> %d\t\t\t\t\t\t\tmoves -> %d\n",basic.movesT ,moves);
 	printw("\n\n\t\t\t\t\t\t\t\thp -> %d", Php);
 	printw("\n\t\t\t\t\t\t\t\tdmg -> %d\n\n", Pdmg);
 	refresh();
@@ -200,7 +201,7 @@ void battle_act(){
 	case 10:		// Enter key represented by 10
 		if (Act == 1)	{
 		printw("\tAttack - succes");
-		basic.hp = basic.hp - Pdmg;
+		basic.hp -= Pdmg;
 		moves++;	}
 		if (Act == 2)	{
 		printw("\tBlock - succes");
@@ -208,6 +209,15 @@ void battle_act(){
 		if (Act == 3)	{
 		printw("\tSkip - succes");
 		moves++;	}
+		
+		if (moves >= basic.movesT){
+		    printw("\n\nEnemy Attacked!");
+		    Php -= basic.dmg;
+		    basic.movesT = 0;
+			if (Act == 2)		{
+			    printw("\t\tAttck blocked!");
+			    Php += basic.dmg;	}
+		}
 		
 		printw("\n\n/>Press any key to continue");
 		refresh();
@@ -228,8 +238,11 @@ void reset_Act(){
 }
 
 void reset_Enmy(){
-	basic.hp = rand()%3+4;
+	basic.hp = rand()%4+4;
 	basic.dmg = rand()%3+1;
 	basic.Ec = 5;
+	basic.movesT = rand()%3+1;
+    if(basic.movesT > 3)
+	basic.dmg++;
 }
 
