@@ -54,7 +54,7 @@ srand(time(NULL));
 	{
 	display();
 	int moved = player_inputM();
-
+	if(PI == 'q') break;
     if (moved){
 	if(PI == 'q') break;
 	
@@ -65,10 +65,8 @@ srand(time(NULL));
 		encounter ();
 		if(PI == 'q') break;
 		}
-	
 	    }
 	}
-	
 	
 	if(Php <= 0) {
 	    clear();
@@ -181,8 +179,8 @@ void encounter(){
 		if (ActL[i] == Act)
 		printw("[*]        ");
 	}
-	printw("\n\tEnemy attacks in -> %d\t\t\t\t\t\t\tmoves -> %d\n",basic.movesT ,moves);
-	printw("\n\n\t\t\t\t\t\t\t\thp -> %d", Php);
+	printw("\n\t\t\t\t\t\t\t\tmoves -> %d\n",moves);
+	printw("\nEnemy attacks in -> %d\n\t\t\t\t\t\t\t\thp -> %d", basic.movesT ,Php);
 	printw("\n\t\t\t\t\t\t\t\tdmg -> %d\n\n", Pdmg);
 	refresh();
 	
@@ -202,9 +200,9 @@ void battle_act(){
 	switch(PI = getch())
 	{
 	case KEY_LEFT:
-	    Act--;
-	    if (Act<1)
-	    Act++;
+		Act--;
+		if (Act<1)
+		Act++;
 	    break;
 	
 	case KEY_RIGHT:
@@ -256,11 +254,11 @@ void reset_Act(){
 }
 
 void reset_Enmy(){
-	basic.hp = rand()%4+4;
+	basic.hp = rand()%7+4;
 	basic.dmg = rand()%5+1;
 	basic.Ec = 5;
 	basic.movesR = rand()%3+2;
-	basic.movesT == basic.movesR;
+	basic.movesT = basic.movesR;
     if(basic.movesR >= 4)
 	basic.dmg++;
 }
