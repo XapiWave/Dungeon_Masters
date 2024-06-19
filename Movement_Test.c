@@ -21,13 +21,14 @@ typedef struct	{
 	int dmg;
 	int Ec;		//	Encounter value (chance)
 	int movesT;	//	Move threshold (n of moves for enemy to attack)
+	int movesR;	//	N of moves to attack - default value
 }enemy;
 enemy basic;
 
 int victories=0;
-int moves=0;
+int moves=0;		//	Number of moves in combat
 int Ev;			//	Encounter value
-char ActL[3];		//	Battle action list
+char ActL[3];		//	Battle action list - Attack - Block - Skip
 int Act=1;
 
 int Php = 25;		//	Player hp
@@ -49,28 +50,31 @@ noecho();		//	Makes it so the pressed keys are not displayed in the terminal
 srand(time(NULL));
 	
 	reset_Enmy();
-	while(1)
+	while(Php > 0)
 	{
 	display();
 	int moved = player_inputM();
 
     if (moved){
+	if(PI == 'q') break;
+	
 	Ev = rand()%10+1;
 	
-	if (Ev <= basic.Ec)
-	do{
+	if (Ev <= basic.Ec)	{
 		if(PI == 'q') break;
 		encounter ();
 		if(PI == 'q') break;
+		}
 	
-	}while(basic.hp >0);
-	if(basic.hp<=0)		{
-		victories++;
-		moves = 0;
-		reset_Enmy();	}
 	    }
-	if(PI == 'q') break;
+	}
 	
+	
+	if(Php <= 0) {
+	    clear();
+	    printw("You died\n\nThank you for playing!\n\n\n\n/> Press any key to finish");
+	    refresh();
+	    getch(); 
 	}
 	
 endwin();		//closes the window (aka the ncurses library)
@@ -161,7 +165,9 @@ return moved;
 //---------------------enemy-encounter--------------------------------------------
 
 void encounter(){
-	
+	do{
+	if (Php <= 0)	break;
+	if (PI == 'q') break;
 	
 	clear();
 	reset_Act();
@@ -181,6 +187,15 @@ void encounter(){
 	refresh();
 	
 	battle_act();
+	
+	if(basic.hp<=0)
+		break;
+	
+	}while(Php > 0);
+victories++;
+moves = 0;
+reset_Enmy();
+
 }
 
 void battle_act(){
@@ -202,18 +217,21 @@ void battle_act(){
 		if (Act == 1)	{
 		printw("\tAttack - succes");
 		basic.hp -= Pdmg;
-		moves++;	}
+		moves++;	
+		basic.movesT--;	}
 		if (Act == 2)	{
 		printw("\tBlock - succes");
-		moves++;	}
+		moves++;	
+		basic.movesT--;	}
 		if (Act == 3)	{
 		printw("\tSkip - succes");
-		moves++;	}
+		moves++;	
+		basic.movesT--;}
 		
-		if (moves >= basic.movesT){
+		if (basic.movesT <= 0){
 		    printw("\n\nEnemy Attacked!");
 		    Php -= basic.dmg;
-		    basic.movesT = 0;
+		    basic.movesT = basic.movesR;
 			if (Act == 2)		{
 			    printw("\t\tAttck blocked!");
 			    Php += basic.dmg;	}
@@ -239,10 +257,11 @@ void reset_Act(){
 
 void reset_Enmy(){
 	basic.hp = rand()%4+4;
-	basic.dmg = rand()%3+1;
+	basic.dmg = rand()%5+1;
 	basic.Ec = 5;
-	basic.movesT = rand()%3+1;
-    if(basic.movesT > 3)
+	basic.movesR = rand()%3+2;
+	basic.movesT == basic.movesR;
+    if(basic.movesR >= 4)
 	basic.dmg++;
 }
 
