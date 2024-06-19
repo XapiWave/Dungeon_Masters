@@ -84,7 +84,6 @@ int PI;			//	Player Input
 //------------Character Selection-----------------
 char nome_char[12];
 int classe_char;
-int nivel_char;
 char classe_char_val[20];
 
 //------------Character Selection-----------------
@@ -106,6 +105,7 @@ void clear_screen();
 void reset();
 void display();
 int player_inputM();
+void player_reset();
 //---------------------------------
 //------------Character Selection-----------------
 void character_selection();
@@ -162,6 +162,7 @@ keypad(stdscr, TRUE);	//	Enable special keys to be captured
 noecho();		//	Makes it so the pressed keys are not displayed in the terminal
 srand(time(NULL));
 	
+	player_reset();
 	reset_Enmy();
 	while(Php > 0)
 	{
@@ -629,6 +630,10 @@ void battle_act(){
 void reset_Act(){
 	for(int i=1;i<=3;i++)
 		ActL[i] = ' ';
+}
+
+void player_reset(){
+	Php = 25;
 }
 
 void reset_Enmy(){
