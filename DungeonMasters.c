@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <curses.h>
+#include <string.h>
 
 #ifdef _WIN32
     #include <windows.h>
@@ -85,18 +87,6 @@ int classe_char;
 int nivel_char;
 char classe_char_val[20];
 
-struct stats {
-	int forca, agi, intel, resist;
-	
-	int hp, mana, dodge;
-	};
-	
-		/*
-		 * Força (FOR)			- A força fisica de seu personagem.
-		 * Agilidade (AGI)		- A velocidade e reflexos de seu personagem.
-		 * Inteligencia (INT) 	- A força mental e magica de seu personagem.
-		 * Resistencia (RES) 	- A resistencia fisica e mental de seu personagem.
-		 */
 //------------Character Selection-----------------
 
 FILE *f;
@@ -115,12 +105,37 @@ void clear_screen();
 //------------jogo-----------------
 void reset();
 void display();
-void player_input();
+int player_inputM();
 //---------------------------------
 //------------Character Selection-----------------
 void character_selection();
 //------------Character Selection-----------------
 //---------------------------------
+
+//---------------------enemy-encounter--------------------------------------------
+typedef struct	{
+	int hp;
+	int dmg;
+	int Ec;		//	Encounter value (chance)
+	int movesT;	//	Move threshold (n of moves for enemy to attack)
+	int movesR;	//	N of moves to attack - default value
+}enemy;
+enemy basic;
+
+int victories=0;
+int moves=0;		//	Number of moves in combat
+int Ev;			//	Encounter value
+char ActL[3];		//	Battle action list - Attack - Block - Skip
+int Act=1;
+
+int Php = 25;		//	Player hp
+int Pdmg = 3;		//	Player dmg
+
+void encounter();
+void battle_act();
+void reset_Act();	//reset Act list
+void reset_Enmy();
+//---------------------enemy-encounter--------------------------------------------
 
 
 int main(void)
@@ -145,12 +160,38 @@ initscr();		//	Initializes the screen (aka the ncurses library)
 raw();			//	Disables line buffering, sends all key inputs to the programm using ncurses
 keypad(stdscr, TRUE);	//	Enable special keys to be captured
 noecho();		//	Makes it so the pressed keys are not displayed in the terminal
+srand(time(NULL));
 	
-	while(1)				{
+	reset_Enmy();
+	while(Php > 0)
+	{
 	display();
-	player_input();
+	int moved = player_inputM();
+	if(PI == 'q') break;
+    if (moved){
+	if(PI == 'q') break;
 	
-	if(PI == 'q') break;	}	// press q to exit
+	Ev = rand()%10+1;
+	
+	if (Ev <= basic.Ec)	{
+		if(PI == 'q') break;
+		encounter ();
+		if(PI == 'q') break;
+		}
+	    }
+	}
+	
+	if(Php <= 0) {
+	    clear();
+	    
+	    f = fopen("placar.txt", "a");
+	    fprintf(f, "%s %d\n", nome_char, victories);
+	    fclose(f);
+	    
+	    printw("You died\n\nThank you for playing!\n\nEnemies defeated -> %d\n\n\n\n/> Press any key to finish", victories);
+	    refresh();
+	    getch(); 
+	}
 	
 endwin();		//closes the window (aka the ncurses library)
 
@@ -166,6 +207,8 @@ endwin();		//closes the window (aka the ncurses library)
 			
 			
 			case 3:
+			
+				printf("\n\n");
 				leaderboard();
 			break;
 			
@@ -209,6 +252,9 @@ void mostrar_leaderboard()
 
 void leaderboard()
 {
+	clear_screen();
+	
+	printf("\n");
 	UI();
 	printf("\n\n[1] <- Ver Placar\n[2] <- Apagar Placar\n>/ ");
 	scanf("%d", &placar_option);
@@ -226,7 +272,7 @@ void leaderboard()
 			
 			if(f != NULL) {
 				fclose(f);
-				printf("Placar apagado com sucesso.\n");
+				printf("Placar apagado com sucesso.\n\n");
 			} else {
 				printf("Erro ao apagar o placar.\n");
 			}
@@ -340,6 +386,7 @@ void UI();
 	scanf("%d", &menu);
 	
 	UI();
+	printf("\n\n\n");
 }
 
 void UI()
@@ -363,7 +410,8 @@ void clear_screen()
 
 void character_selection()
 {
-	struct stats char1;
+	
+	clear_screen();
 	
 	UI();
 	printf("\n\t\tBem vindo a Dungeon Masters\n\nUm jogo Roguelite RPG feito completamente em C com uma aparencia em ASCII!\n\n");
@@ -372,6 +420,7 @@ void character_selection()
 	printf("\n\nAventureiro... Qual e o seu nome? (Max 12 Letras)\n>/ ");
 	scanf("%s", nome_char);
 	
+	clear_screen();
 	printf("%s... O Mundo precisa de sua ajuda! O Rei Caido voltou e ele esta armando um plano!\n\tSo voce consegue parar-lo!", nome_char);
 	printf("\n\n Vamos %s, Escolha seu caminho!\n\n", nome_char);
 	
@@ -379,8 +428,6 @@ void character_selection()
 	
 	printf("\n\n\t[1]<- Cavaleiro\n\t[2]<- Mago\n\t[3]<- Ninja\n>/ ");
 	scanf("%d", &classe_char);
-	
-	clear_screen();
 	
 		switch(classe_char)
 			{
@@ -405,41 +452,8 @@ void character_selection()
 					printf("Caminho invalido. Escolha outro caminho da proxima vez.");
 				break;
 				}
-	
-	UI();
-	
-	// Atributos //
-	nivel_char = 1;
-	
-	char1.forca  = 0;
-	char1.agi 	 = 0;
-	char1.intel  = 0;
-	char1.resist = 0;
-	// Atributos //
-	
-	// Bonus da Classe //
-	if(classe_char == 1) 
-	{
-		char1.forca++; }
-		
-	if(classe_char == 2) 
-	{
-		char1.intel++; }
-		
-	if(classe_char == 3) 
-	{
-		char1.agi++; }
-	// Bonus da Classe //
-	
-	// Atributos Rigidos //
-		char1.hp = char1.resist + 3;
-		char1.mana = char1.intel + 5;
-		char1.dodge = char1.agi + 2;
-	// Atributos Rigidos //
-	
-	printf("Informacoes do Personagem: \n\n\t%s, %s Nivel %d\n", nome_char, classe_char_val, nivel_char);
-	printf("\n\nSeus atributos sao: \n\tFOR %d\n\tAGI %d\n\tINT %d\n\tRES %d\n\n", char1.forca, char1.agi, char1.intel, char1.resist);
-	printf("\tPontos de Vida: %d\n\tPontos de Magia: %d\n\tChance de Esquiva: %d\n\n", char1.hp, char1.mana, char1.dodge);
+				
+		clear_screen();
 	
 	UI();
 }
@@ -451,7 +465,9 @@ void character_selection()
 void reset(){
 	for (int v=0;v<=6;v++){
 		for (int h=0;h<=6;h++){
-			if (h==0 || h==6 || v==0 || v==6)
+			if (h==0 || h==6)
+			map[h][v] = '!';
+			if (v==0 || v==6)
 			map[h][v] = '!';
 			if (h!=0 && h!=6 && v!=0 && v!=6)
 			map[h][v] = ' ';
@@ -459,7 +475,7 @@ void reset(){
 	}
 }
 
-void display() {
+void display(){
 	clear();
 	reset();
 	map[Ph][Pv] = '*';
@@ -473,41 +489,154 @@ void display() {
 			printw("[%c]  ", map[h][v]);
 			
 			if (map[h][v] == map[Ph][Pv])
-			printw("[%c]  ", aparencia);
+			printw("[*]  ");
 		}
 		printw("\n\n");
 	}
+printw("\t\t\t\t\t\t\tEnemys defeated -> %d\n\n", victories);
+printw("\t\t\t\t\t\t\tPlayer hp -> %d\n", Php);
+printw("\t\t\t\t\t\t\tPlayer dmg -> %d\n\n\n", Pdmg);
+printw("\t\t\t\t\t\t\tMovement -> Arrow Keys\n\n");
 refresh();
 }
 
-void player_input(){
+int player_inputM(){
+int moved = 0;
 switch(PI = getch())
 	{
 	case KEY_UP:
 	    Pv--;
 	    if(map[Ph][Pv] == '!')
-	    Pv++;
+		Pv++;
+	    else
+		moved = 1;
 	    break;
 	
 	case KEY_DOWN:
 	    Pv++;
 	    if(map[Ph][Pv] == '!')
-	    Pv--;
+		Pv--;
+	    else
+		moved = 1;
 	    break;
 	
 	case KEY_LEFT:
 	    Ph--;
 	    if(map[Ph][Pv] == '!')
-	    Ph++;
+		Ph++;
+	    else
+		moved = 1;
 	    break;
 	
 	case KEY_RIGHT:
 	    Ph++;
 	    if(map[Ph][Pv] == '!')
-	    Ph--;
+		Ph--;
+	    else
+		moved = 1;
 	    break;
 	
 	default:
 	    break;
 	}
+return moved;
+}
+
+//---------------------enemy-encounter--------------------------------------------
+
+void encounter(){
+	do{
+	if (Php <= 0)	break;
+	if (PI == 'q') break;
+	
+	clear();
+	reset_Act();
+	ActL[Act] = '*';
+	printw("Battle Window\n\n\t\tEnemy Encountered!\t\t\texit-> q\n\n\tEnemy hp -> %d\n\tEnemy dmg -> %d", basic.hp, basic.dmg);
+	printw("\n\n\n\t\t        ATTACK     BLOCK      SKIP\n\t\t\t");
+	for(int i=1;i<=3;i++)
+	{
+		if (ActL[i] != Act)
+		printw("[%c]        ", ActL[i]);
+		if (ActL[i] == Act)
+		printw("[*]        ");
+	}
+	printw("\n\t\t\t\t\t\t\t\tmoves -> %d\n",moves);
+	printw("\nEnemy attacks in -> %d\n\t\t\t\t\t\t\t\thp -> %d", basic.movesT ,Php);
+	printw("\n\t\t\t\t\t\t\t\tdmg -> %d\n\n", Pdmg);
+	refresh();
+	
+	battle_act();
+	
+	if(basic.hp<=0)
+		break;
+	
+	}while(Php > 0);
+victories++;
+moves = 0;
+reset_Enmy();
+}
+
+void battle_act(){
+	switch(PI = getch())
+	{
+	case KEY_LEFT:
+		Act--;
+		if (Act<1)
+		Act++;
+	    break;
+	
+	case KEY_RIGHT:
+		Act++;
+		if (Act>3)
+		Act--;
+	    break;
+	
+	case 10:		// Enter key represented by 10
+		if (Act == 1)	{
+		printw("\tAttack - succes");
+		basic.hp -= Pdmg;
+		moves++;	
+		basic.movesT--;	}
+		if (Act == 2)	{
+		printw("\tBlock - succes");
+		moves++;	
+		basic.movesT--;	}
+		if (Act == 3)	{
+		printw("\tSkip - succes");
+		moves++;	
+		basic.movesT--;}
+		
+		if (basic.movesT <= 0){
+		    printw("\n\nEnemy Attacked!");
+		    Php -= basic.dmg;
+		    basic.movesT = basic.movesR;
+			if (Act == 2)		{
+			    printw("\t\tAttck blocked!");
+			    Php += basic.dmg;	}
+		}
+		
+		printw("\n\n/>Press any key to continue");
+		refresh();
+		getch();	//	awaits user input
+		break;
+	
+	default:
+	    break;
+	}
+}
+
+void reset_Act(){
+	for(int i=1;i<=3;i++)
+		ActL[i] = ' ';
+}
+
+void reset_Enmy(){
+	basic.hp = rand()%7+4;
+	basic.dmg = rand()%5+1;
+	basic.Ec = 5;
+	basic.movesR = rand()%3+2;
+	basic.movesT = basic.movesR;
+    if(basic.movesR >= 4)
+	basic.dmg++;
 }
