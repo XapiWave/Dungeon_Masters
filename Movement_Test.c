@@ -70,7 +70,7 @@ srand(time(NULL));
 	
 	if(Php <= 0) {
 	    clear();
-	    printw("You died\n\nThank you for playing!\n\n\n\n/> Press any key to finish");
+	    printw("You died\n\nThank you for playing!\n\nEnemies defeated -> %d\n\n\n\n/> Press any key to finish", victories);
 	    refresh();
 	    getch(); 
 	}
